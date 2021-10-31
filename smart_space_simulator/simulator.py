@@ -5,18 +5,19 @@ import random
 import datetime
 import time
 import json
+import csv
 from pprint import pprint
 
 KEY_PATH = './firebase.json'
 DATABASE_URL = 'https://smart-space-c3a9d-default-rtdb.firebaseio.com'
-
+coords_data = []
 cred = credentials.Certificate(KEY_PATH)
 firebase_admin.initialize_app(cred, {
     'databaseURL': DATABASE_URL
 })
 
-with open('coords.json') as json_file:
-    coords_data = json.load(json_file)
+# with open('coords.json') as json_file:
+#     coords_data = json.load(json_file)
 
 used_coords_count = 0
 
@@ -32,9 +33,18 @@ def createRandom3DDatas():
         for j in range(0,10):
             rbdatas.append([i,j,random.randint(0,30)])
     return rbdatas
-
+def read_csv_data():
+    file = open("file_path.csv")
+    csvreader = csv.reader(file)
+    header = next(csvreader)
+    # print(header)
+    
+    for row in csvreader:
+        coords_data.append(row)
+    file.close()
 def create_data():
     global used_coords_count
+    
     pm25 = random.randint(20, 80)
     pm100 = random.randint(20, 80)
     o3 = random.randint(80, 130)
@@ -43,8 +53,13 @@ def create_data():
     co = random.randint(30, 50)
     temperature = random.uniform(20.0, 30.0)
     humidity = random.uniform(60.0, 70.0)
+    light = random.uniform(0, 100)
     currentTime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     rbdatas = createRandom3DDatas() 
+
+
+    # call csv file
+
     try:
         coord = coords_data[used_coords_count]
         if used_coords_count == len(coords_data):
@@ -55,10 +70,12 @@ def create_data():
         used_coords_count = 0
         coord = coords_data[used_coords_count]
 
-    return {'pm25': pm25, 'pm100': pm100, 'o3': o3, 'so2': so2, 'no2': no2, 'co': co, 'temperature': temperature, 'humidity': humidity, 'time': currentTime, 'coords': coord, 'threeDdatas' : rbdatas}
+    return {'light': light, 'pm25': pm25, 'pm100': pm100, 'o3': o3, 'so2': so2, 'no2': no2, 'co': co, 'temperature': temperature, 'humidity': humidity, 'time': currentTime, 'coords': coord, 'threeDdatas' : rbdatas}
 
+read_csv_data()
 
 while True:
+    
     add(create_data())
     time.sleep(1)
 
