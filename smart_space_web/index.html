@@ -12,7 +12,7 @@
 <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
 <link type="text/css" rel="stylesheet" href="./css/style.css?v=1">
 <link type="text/css" rel="stylesheet" href="./dist/jquery.toast.min.css">
-
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
@@ -40,7 +40,7 @@
         var currentPitch = 60;
         var labels = ['data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data8', 'data9', 'data10'];
         var bar3DData = createRandomBar3DData();
-
+        
         var flight_plan_height = 50;
         var flight_path_point_data = [];
 
@@ -60,10 +60,13 @@
             var humidity = data["humidity"];
             var data_time = data["time"];
             var coords = data["coords"];
+
+            let threeDDatas = data["threeDdatas"];
             tempDatas.push(create2DData(temperature, data_time));
             humidityDatas.push(create2DData(humidity, data_time));
             chart1.setOption(getRadarOption([pm25, pm100, o3, co, so2, no2]));
             chart2.setOption(get2DOption(tempDatas, humidityDatas));
+            chart3.setOption(getBar3DOption(threeDDatas));
             flight_path_point_data.push(createFlightPointsData(coords, pm25));
             chart4.setOption(getFlightData3D(flight_path_point_data));
         }
@@ -73,7 +76,7 @@
             var ref = database.ref('datas/');
 
             ref.on('value', function(snapshot) {
-                console.log(snapshot.val())
+                console.log(snapshot.val()) 
                 showData(snapshot.val());
             });
         }
@@ -406,8 +409,21 @@
 
         chart1.setOption(getRadarOption([]));
         chart2.setOption(get2DOption([], []));
-        chart3.setOption(getBar3DOption(bar3DData));
+        chart3.setOption(getBar3DOption([]));
         chart4.setOption(getMap3DOption());
         chart4.setOption(getFlightData3D([]));
+    </script>
+    <script>
+    $(document).ready(function() {
+        $.ajax({
+            url : 'http://opendata2.epa.gov.tw/AQI.json',
+            method: 'GET',
+            success:function(response) {
+                response.forEach(function(data) {
+                    console.log(data)
+                })
+            }
+        })
+    })
     </script>
 </body>

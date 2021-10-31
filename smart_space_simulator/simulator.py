@@ -26,7 +26,12 @@ def add(data):
     ref = db.reference('datas/')
     ref.set(data)
     pprint('Send data to db: {}'.format(data))
-
+def createRandom3DDatas():
+    rbdatas = []
+    for i in range(0,5):
+        for j in range(0,10):
+            rbdatas.append([i,j,random.randint(0,30)])
+    return rbdatas
 
 def create_data():
     global used_coords_count
@@ -39,6 +44,7 @@ def create_data():
     temperature = random.uniform(20.0, 30.0)
     humidity = random.uniform(60.0, 70.0)
     currentTime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    rbdatas = createRandom3DDatas() 
     try:
         coord = coords_data[used_coords_count]
         if used_coords_count == len(coords_data):
@@ -49,7 +55,7 @@ def create_data():
         used_coords_count = 0
         coord = coords_data[used_coords_count]
 
-    return {'pm25': pm25, 'pm100': pm100, 'o3': o3, 'so2': so2, 'no2': no2, 'co': co, 'temperature': temperature, 'humidity': humidity, 'time': currentTime, 'coords': coord}
+    return {'pm25': pm25, 'pm100': pm100, 'o3': o3, 'so2': so2, 'no2': no2, 'co': co, 'temperature': temperature, 'humidity': humidity, 'time': currentTime, 'coords': coord, 'threeDdatas' : rbdatas}
 
 
 while True:
